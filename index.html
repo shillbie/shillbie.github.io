@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://cdn.jsdelivr.net/npm/quagga/dist/quagga.min.js"></script>
+</head>
+
+<body>
+
+    <h1>QR Code Scanner</h1>
+
+    <div id="scanner-container"></div>
+    <div id="result"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Configure and start the QuaggaJS scanner
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.getElementById("scanner-container"),
+                    constraints: {
+                        width: 480,
+                        height: 320,
+                        facingMode: "environment" // or "user" for the front camera
+                    },
+                },
+                decoder: {
+                    readers: ["ean_reader", "ean_8_reader", "code_128_reader", "code_39_reader", "qrcode_reader"],
+                },
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                Quagga.start();
+            });
+
+            // Add an event listener for the result event
+            Quagga.onDetected(function(result) {
+                var code = result.codeResult.code;
+                document.getElementById("result").innerHTML = `<p>QR Code Scanned: ${code}</p>`;
+            });
+        });
+    </script>
+
+</body>
+
+</html>
