@@ -1,48 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner</title>
-    <!-- Include instascan library -->
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
-</head>
+    <title>Html-Qrcode Demo</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 <body>
+    <div id="qr-reader" style="width:500px"></div>
+    <div id="qr-reader-results"></div>
+</body>
+<script>
+    function docReady(fn) {
+        // see if DOM is already available
+        if (document.readyState === "complete"
+            || document.readyState === "interactive") {
+            // call on next available tick
+            setTimeout(fn, 1);
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
 
-    <h1>QR Code Scanner</h1>
-
-    <!-- Video element for the camera feed -->
-    <video id="video-preview"></video>
-
-    <!-- Script to handle QR code scanning -->
-    <script>
-        // Function to start the QR code scanner
-        function startScanner() {
-            // Create a new Instascan scanner
-            const scanner = new Instascan.Scanner({ video: document.getElementById('video-preview') });
-
-            // Add a callback for when a QR code is scanned
-            scanner.addListener('scan', function (content) {
-                alert('Scanned: ' + content);
-            });
-
-            // Start the camera and begin scanning
-            Instascan.Camera.getCameras().then(function (cameras) {
-                if (cameras.length > 0) {
-                    scanner.start(cameras[0]);
-                } else {
-                    alert('No cameras found.');
-                }
-            }).catch(function (e) {
-                console.error(e);
-            });
+    docReady(function () {
+        var resultContainer = document.getElementById('qr-reader-results');
+        var lastResult, countResults = 0;
+        function onScanSuccess(decodedText, decodedResult) {
+            if (decodedText !== lastResult) {
+                ++countResults;
+                lastResult = decodedText;
+                // Handle on success condition with the decoded message.
+                console.log(`Scan result ${decodedText}`, decodedResult);
+            }
         }
 
-        // Call the startScanner function when the page is loaded
-        document.addEventListener('DOMContentLoaded', function () {
-            startScanner();
-        });
-    </script>
-
-</body>
+        var html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    });
+</script>
+</head>
 </html>
