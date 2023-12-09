@@ -5,12 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APIs</title>
+    <title>Document</title>
 </head>
 
 <body data-rsssl=1>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"
+        integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         main {
             display: flex;
@@ -39,17 +41,17 @@
             },
             fps: 20,
         });
-
         scanner.render(success, error);
 
         function success(result) {
+            // Display the scanned result
             document.getElementById('result').innerHTML = `
                 <h2>Success!</h2>
                 <p><a href="${result}">${result}</a></p>
             `;
-
-            // Send a POST request to the specified API endpoint
-            const postData = {
+            
+            // Make a POST request to your Flask API endpoint
+            const data = {
                 si: result["si"],
                 pk: result["pk"],
                 qi: result["qi"]
@@ -60,11 +62,14 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(postData),
+                body: JSON.stringify(data),
             })
             .then(response => response.json())
-            .then(apiResponse => {
-                document.getElementById('result').innerHTML += `<p>API Response: ${apiResponse.response}</p>`;
+            .then(apiResult => {
+                // Display the result from the API in a <p> element
+                document.getElementById('result').innerHTML += `
+                    <p>API Result: ${JSON.stringify(apiResult)}</p>
+                `;
             })
             .catch(error => console.error('Error sending POST request:', error));
 
