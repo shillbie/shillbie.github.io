@@ -5,25 +5,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>QR Code Scanner</title>
 </head>
 
 <body data-rsssl=1>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"
-        integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         main {
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
+        
         #reader {
             width: 600px;
         }
-
+        
         #result {
             text-align: center;
             font-size: 1.5rem;
@@ -41,32 +39,36 @@
             },
             fps: 20,
         });
+
         scanner.render(success, error);
 
         function success(result) {
             document.getElementById('result').innerHTML = `
-<h2>Success!</h2>
-<p><a href="${result}">${result}</a></p>
-`;
+                <h2>Success!</h2>
+                <p><a href="${result}">${result}</a></p>
+            `;
 
-            // Send a POST request with the result data
+            // Send a POST request to the specified API endpoint
             const postData = {
-                si: result.si,
-                pk: result.pk,
-                qi: result.qi
+                si: result["si"],
+                pk: result["pk"],
+                qi: result["qi"]
             };
 
             fetch('https://7265-2001-19f0-7001-1b11-5400-4ff-fea5-7f51.ngrok-free.app/api/check_encrypted_key', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(postData)
+                body: JSON.stringify(postData),
             })
             .then(response => response.json())
-            .then(data => console.log('Response from server:', data))
-            .catch(error => console.error('Error:', error));
+            .then(apiResponse => {
+                document.getElementById('result').innerHTML += `<p>API Response: ${apiResponse.response}</p>`;
+            })
+            .catch(error => console.error('Error sending POST request:', error));
 
+            // Clear the scanner
             scanner.clear();
             document.getElementById('reader').remove();
         }
